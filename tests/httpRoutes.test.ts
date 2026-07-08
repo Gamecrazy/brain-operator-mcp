@@ -56,4 +56,18 @@ describe("HTTP routes", () => {
       }
     });
   });
+
+  it("routes GET /brain/mcp to the streamable HTTP transport", async () => {
+    const baseUrl = await startTestServer();
+
+    const response = await fetch(`${baseUrl}/brain/mcp`, {
+      headers: {
+        Accept: "application/json"
+      }
+    });
+    const body = await response.json();
+
+    expect(response.status).toBe(406);
+    expect(body.error.message).toBe("Not Acceptable: Client must accept text/event-stream");
+  });
 });

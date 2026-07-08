@@ -39,6 +39,8 @@ export function createHttpApp() {
 
   app.get("/health", healthHandler);
   app.get("/brain/health", healthHandler);
+  app.get("/mcp", mcpHandler);
+  app.get("/brain/mcp", mcpHandler);
   app.post("/mcp", mcpHandler);
   app.post("/brain/mcp", mcpHandler);
 
