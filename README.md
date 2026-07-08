@@ -36,7 +36,7 @@ Expected:
 {
   "ok": true,
   "name": "brain-operator-mcp",
-  "version": "0.1.3"
+  "version": "0.1.4"
 }
 ```
 
@@ -155,7 +155,7 @@ Local-only tools:
 - Destructive tools are not registered in v0.1.
 - Batch writes must be created as a plan, reviewed by the user, then committed by `planId`.
 - Notes are append-only and limited by `MAX_NOTE_CHARS`.
-- `replace_note` is the explicit full-note replacement tool. It overwrites existing note Markdown and is kept separate from `append_note`.
+- `replace_note` is the explicit full-note content setting tool. It sends the provided Markdown body to TheBrain's note update endpoint and is kept separate from `append_note`.
 - URL attachments reject local and private-network hosts.
 
 ## Manual Smoke Tests

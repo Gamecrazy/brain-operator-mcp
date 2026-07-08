@@ -24,6 +24,7 @@ This project is maintained as a small, layered MCP server.
 
 `append_note` appends Markdown and must not overwrite existing content.
 `replace_note` replaces the entire Markdown note and must remain separate from `append_note`; do not hide full-note replacement behind an append mode flag.
+Keep `replace_note` annotated as a non-destructive, idempotent write so MCP clients can distinguish it from delete-style destructive tools while preserving the direct note update contract.
 `create_note_update_plan` is the compatibility path for clients that hide direct full-note replacement tools. It must only create a pending `replace_note` plan and must not call TheBrain directly.
 
 ## TheBrain Adapter Rule

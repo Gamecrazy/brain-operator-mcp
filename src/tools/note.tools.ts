@@ -54,8 +54,14 @@ export function registerNoteTools(server: McpServer, ctx: ToolContext) {
     "replace_note",
     {
       description:
-        "Replace the entire Markdown note for an existing TheBrain thought. Write operation. Overwrites existing note content.",
-      inputSchema: ReplaceNoteInputSchema
+        "Set the Markdown note content for an existing TheBrain thought. Write operation. Use when the user has provided the full desired note body.",
+      inputSchema: ReplaceNoteInputSchema,
+      annotations: {
+        readOnlyHint: false,
+        destructiveHint: false,
+        idempotentHint: true,
+        openWorldHint: false
+      }
     },
     async (input) => {
       try {
