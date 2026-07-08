@@ -16,6 +16,7 @@ The server defaults to:
 - `GET /health`
 - `POST /mcp`
 - TheBrain Cloud API base URL: `https://api.bra.in`
+- TheBrain Local API base URL: `http://localhost:8001/api`
 
 ## Health
 
@@ -83,12 +84,36 @@ Safe writes:
 - `append_note`
 - `add_url_attachment`
 
+Local app control:
+
+- `get_app_state`
+- `open_brain`
+- `activate_thought`
+- `close_brain_tab`
+
 Plan workflow:
 
 - `create_change_plan`
 - `get_change_plan`
 - `discard_change_plan`
 - `commit_change_plan`
+
+## Local App Control
+
+The MCP server can control the local TheBrain desktop client through TheBrain Local API.
+
+1. In TheBrain desktop, enable Local API in settings.
+2. Copy the Local API key into `THEBRAIN_API_KEY` in `.env`.
+3. Set `THEBRAIN_LOCAL_BASE_URL` if your Local API is not on `http://localhost:8001/api`.
+
+Local-only tools:
+
+- `get_app_state`
+- `open_brain`
+- `activate_thought`
+- `close_brain_tab`
+
+`open_brain`, `activate_thought`, and `close_brain_tab` require `WRITE_TOOLS_ENABLED=true` because they change local client UI state.
 
 ## Safety
 
@@ -174,6 +199,9 @@ Then call `commit_change_plan` with:
 - `WRITE_DISABLED`: set `WRITE_TOOLS_ENABLED=true` when you intentionally want writes.
 - `UNSAFE_URL`: use a public `http` or `https` URL.
 - `PLAN_NOT_PENDING`: the plan was already committed, discarded, or expired.
+- `LOCAL_APP_UNAVAILABLE`: enable TheBrain Local API and check `THEBRAIN_LOCAL_BASE_URL`.
+- `LOCAL_APP_AUTH_FAILED`: use the Local API key from TheBrain desktop settings.
+- `LOCAL_APP_ACTION_FAILED`: check the brain/thought IDs and local client state.
 
 ## Verification
 

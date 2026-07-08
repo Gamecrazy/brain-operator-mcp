@@ -44,6 +44,13 @@ MCP responses use:
 - `append_note`: appends markdown only. It never overwrites an existing note.
 - `add_url_attachment`: adds a public HTTP or HTTPS URL attachment.
 
+## Local App Control Tools
+
+- `get_app_state`: no input. Calls `GET /api/app/state` on `THEBRAIN_LOCAL_BASE_URL`.
+- `open_brain`: optional `brainId`. Requires writes enabled. Calls `POST /api/app/brain/{brainId}/open`.
+- `activate_thought`: optional `brainId`, required `thoughtId`. Requires writes enabled. Calls `POST /api/app/brain/{brainId}/thought/{thoughtId}/activate`.
+- `close_brain_tab`: optional `brainId`. Requires writes enabled. Calls `POST /api/app/brain/{brainId}/close`.
+
 ## Plan Tools
 
 - `create_change_plan`: validates and stores a pending batch plan. Does not write to TheBrain.
@@ -53,4 +60,4 @@ MCP responses use:
 
 ## Error Codes
 
-Common codes include `BRAIN_ID_REQUIRED`, `WRITE_DISABLED`, `UNSAFE_URL`, `RELATION_REQUIRED`, `NO_PATCH_FIELDS`, `PLAN_NOT_FOUND`, `PLAN_EXPIRED`, `PLAN_NOT_PENDING`, `PLAN_VALIDATION_FAILED`, and `UNKNOWN_ERROR`.
+Common codes include `BRAIN_ID_REQUIRED`, `WRITE_DISABLED`, `UNSAFE_URL`, `RELATION_REQUIRED`, `NO_PATCH_FIELDS`, `PLAN_NOT_FOUND`, `PLAN_EXPIRED`, `PLAN_NOT_PENDING`, `PLAN_VALIDATION_FAILED`, `LOCAL_APP_UNAVAILABLE`, `LOCAL_APP_AUTH_FAILED`, `LOCAL_APP_ACTION_FAILED`, and `UNKNOWN_ERROR`.

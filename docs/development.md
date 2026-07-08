@@ -24,6 +24,13 @@ This project is maintained as a small, layered MCP server.
 
 Do not leak TheBrain API quirks into MCP tool contracts. Keep field mapping in `src/thebrain/client.ts`, `src/thebrain/endpoints.ts`, or a focused adapter helper.
 
+## Local App Control Adapter
+
+`src/thebrain/localAppClient.ts` is only for TheBrain desktop Local API app-control endpoints under `/api/app/*`.
+Keep it separate from `src/thebrain/client.ts`, which owns normal TheBrain data endpoints.
+Do not add a raw Local API passthrough tool. Add named MCP tools with narrow schemas instead.
+Local app-control tools that change client UI state must call `requireWriteEnabled()`.
+
 ## Plan Workflow Rule
 
 Batch writes must remain two-step:
