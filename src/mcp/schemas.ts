@@ -99,6 +99,13 @@ export const CreateChangePlanInputSchema = z.object({
   duplicateCheck: z.boolean().default(true)
 });
 
+export const CreateNoteUpdatePlanInputSchema = z.object({
+  brainId: z.string().optional(),
+  thoughtId: z.string().min(1),
+  title: z.string().min(1).max(200).default("Update note"),
+  markdown: z.string().min(1).max(policy.maxNoteChars)
+});
+
 export const PlanIdInputSchema = z.object({
   planId: z.string().min(1)
 });

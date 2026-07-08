@@ -24,6 +24,7 @@ This project is maintained as a small, layered MCP server.
 
 `append_note` appends Markdown and must not overwrite existing content.
 `replace_note` replaces the entire Markdown note and must remain separate from `append_note`; do not hide full-note replacement behind an append mode flag.
+`create_note_update_plan` is the compatibility path for clients that hide direct full-note replacement tools. It must only create a pending `replace_note` plan and must not call TheBrain directly.
 
 ## TheBrain Adapter Rule
 
@@ -44,6 +45,7 @@ Local app-control tools that change client UI state must call `requireWriteEnabl
 Batch writes must remain two-step:
 
 1. `create_change_plan` validates and stores a pending plan.
+   `create_note_update_plan` stores a single pending note update plan for the same commit path.
 2. `commit_change_plan` accepts only `planId` and `confirm: true`.
 
 Do not add a commit API that accepts fresh changes.

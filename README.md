@@ -36,7 +36,7 @@ Expected:
 {
   "ok": true,
   "name": "brain-operator-mcp",
-  "version": "0.1.2"
+  "version": "0.1.3"
 }
 ```
 
@@ -123,11 +123,13 @@ Local app control:
 Plan workflow:
 
 - `create_change_plan`
+- `create_note_update_plan`
 - `get_change_plan`
 - `discard_change_plan`
 - `commit_change_plan`
 
 Batch plans support `create_thought`, `create_link`, `append_note`, and `replace_note` changes.
+Use `create_note_update_plan` when a client hides or blocks the direct `replace_note` tool; it creates a pending plan for a full note update and still requires `commit_change_plan` with `confirm: true` before TheBrain is changed.
 
 ## Local App Control
 
@@ -230,6 +232,19 @@ Then call `commit_change_plan` with:
   "confirm": true
 }
 ```
+
+Single-note update plan:
+
+```json
+{
+  "brainId": "brain_id",
+  "thoughtId": "thought_id",
+  "title": "Update note",
+  "markdown": "[REDACTED_REPLACEMENT_MARKDOWN]"
+}
+```
+
+Then call `commit_change_plan` with the returned `planId` and `confirm: true`.
 
 ## Common Errors
 

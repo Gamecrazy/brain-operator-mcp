@@ -59,6 +59,7 @@ Local app-control tools authenticate with `THEBRAIN_LOCAL_API_TOKEN`, not `THEBR
 ## Plan Tools
 
 - `create_change_plan`: validates and stores a pending batch plan. Does not write to TheBrain.
+- `create_note_update_plan`: stores a one-change pending plan to set a thought note's Markdown content. It redacts Markdown from model-visible output and does not write to TheBrain until `commit_change_plan`.
 - `get_change_plan`: reads a stored plan with content fields redacted for output.
 - `discard_change_plan`: marks a stored plan as discarded.
 - `commit_change_plan`: executes a stored plan. Accepts only `planId` and `confirm: true`. Returns IDs and counts, not full imported content.

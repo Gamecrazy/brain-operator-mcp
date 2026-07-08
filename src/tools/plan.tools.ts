@@ -3,6 +3,7 @@ import { ok } from "../mcp/result.js";
 import {
   CommitChangePlanInputSchema,
   CreateChangePlanInputSchema,
+  CreateNoteUpdatePlanInputSchema,
   PlanIdInputSchema
 } from "../mcp/schemas.js";
 import { ChangePlanSchema, type Change } from "../plans/changePlan.js";
@@ -24,6 +25,7 @@ export function registerPlanTools(server: McpServer, ctx: ToolContext) {
     },
     async (input) => {
       try {
+        requireWriteEnabled();
         const brainId = resolveBrainId(input.brainId);
         validatePlanRefs(input.changes);
         const now = new Date();
@@ -55,6 +57,54 @@ export function registerPlanTools(server: McpServer, ctx: ToolContext) {
         );
       } catch (error) {
         return toolFailure("PLAN_VALIDATION_FAILED", error, "Fix invalid changes and try again.");
+      }
+    }
+  );
+
+  server.registerTool(
+    "create_note_update_plan",
+    {
+      description:
+        "Create a pending plan to set a thought note's Markdown content after user confirmation. Does not write to TheBrain until commit_change_plan is called.",
+      inputSchema: CreateNoteUpdatePlanInputSchema
+    },
+    async (input) => {
+      try {
+        requireWriteEnabled();
+        const brainId = resolveBrainId(input.brainId);
+        const now = new Date();
+        const plan = ChangePlanSchema.parse({
+          planId: `plan_${compactTimestamp(now)}_${crypto.randomUUID().slice(0, 8)}`,
+          brainId,
+          title: input.title,
+          createdAt: now.toISOString(),
+          expiresAt: addMinutes(now, policy.planTtlMinutes).toISOString(),
+          status: "pending",
+          changes: [
+            {
+              id: "replace_note_1",
+              op: "replace_note",
+              targetRef: input.thoughtId,
+              markdown: input.markdown
+            }
+          ],
+          duplicateCandidates: []
+        });
+        await ctx.planStore.save(plan);
+        const sanitizedPlan = sanitizeChangePlanForOutput(plan);
+        return ok(
+          {
+            planId: plan.planId,
+            status: plan.status,
+            summary: summarizeChanges(plan.changes, 0),
+            preview: previewChanges(plan.changes),
+            expiresAt: plan.expiresAt
+          },
+          "Note update plan created.",
+          { raw: sanitizedPlan }
+        );
+      } catch (error) {
+        return toolFailure("PLAN_VALIDATION_FAILED", error, "Fix invalid note update input and try again.");
       }
     }
   );
@@ -135,6 +185,9 @@ function validatePlanRefs(changes: Change[]) {
     if (change.op === "append_note") {
       if (!refs.has(change.targetRef) && !looksLikeExistingId(change.targetRef)) throw new Error("PLAN_VALIDATION_FAILED");
     }
+    if (change.op === "replace_note") {
+      if (!refs.has(change.targetRef) && !looksLikeExistingId(change.targetRef)) throw new Error("PLAN_VALIDATION_FAILED");
+    }
   }
 }
 
@@ -158,6 +211,7 @@ function summarizeChanges(changes: Change[], duplicateCandidateCount: number) {
     createThoughts: changes.filter((change) => change.op === "create_thought").length,
     createLinks: changes.filter((change) => change.op === "create_link").length,
     appendNotes: changes.filter((change) => change.op === "append_note").length,
+    replaceNotes: changes.filter((change) => change.op === "replace_note").length,
     duplicateCandidateCount
   };
 }
@@ -166,7 +220,8 @@ function previewChanges(changes: Change[]) {
   return changes.slice(0, 20).map((change) => {
     if (change.op === "create_thought") return `create_thought: ${change.name}`;
     if (change.op === "create_link") return `create_link: ${change.fromRef} -> ${change.toRef} ${change.relation}`;
-    return `append_note: ${change.targetRef}`;
+    if (change.op === "append_note") return `append_note: ${change.targetRef}`;
+    return `replace_note: ${change.targetRef}`;
   });
 }
 
