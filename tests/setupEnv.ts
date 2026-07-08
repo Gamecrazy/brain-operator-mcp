@@ -1,0 +1,17 @@
+process.env.THEBRAIN_API_KEY ??= "test_thebrain_api_key";
+process.env.THEBRAIN_BASE_URL ??= "https://api.bra.in";
+process.env.THEBRAIN_MODE ??= "cloud";
+process.env.MCP_SERVER_NAME ??= "brain-operator-mcp";
+process.env.MCP_SERVER_VERSION ??= "0.1.0";
+process.env.PORT ??= "3000";
+process.env.WRITE_TOOLS_ENABLED ??= "true";
+process.env.DESTRUCTIVE_TOOLS_ENABLED ??= "false";
+process.env.MAX_NOTE_CHARS ??= "10000";
+process.env.MAX_SEARCH_RESULTS ??= "50";
+process.env.MAX_PLAN_CHANGES ??= "100";
+process.env.PLAN_TTL_MINUTES ??= "30";
+process.env.AUDIT_LOG_ENABLED ??= "false";
+process.env.AUDIT_LOG_PATH ??= ".data/test-audit.log";
+process.env.PLAN_STORE_PATH ??= ".data/test-plans.json";
+process.env.LOG_LEVEL ??= "silent";
+process.env.NODE_ENV ??= "test";
