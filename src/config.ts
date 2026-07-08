@@ -11,6 +11,7 @@ const BooleanFromEnv = z.preprocess((value) => {
 const EnvSchema = z.object({
   THEBRAIN_API_KEY: z.string().min(1),
   THEBRAIN_BASE_URL: z.string().url().default("https://api.bra.in"),
+  THEBRAIN_LOCAL_BASE_URL: z.string().url().default("http://localhost:8001/api"),
   THEBRAIN_MODE: z.enum(["cloud", "local"]).default("cloud"),
   THEBRAIN_DEFAULT_BRAIN_ID: z.string().optional().default(""),
 

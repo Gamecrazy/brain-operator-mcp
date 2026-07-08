@@ -19,7 +19,10 @@ function knownCode(message: string): string | null {
     "PLAN_EXPIRED",
     "PLAN_NOT_PENDING",
     "PLAN_VALIDATION_FAILED",
-    "UNSAFE_URL"
+    "UNSAFE_URL",
+    "LOCAL_APP_UNAVAILABLE",
+    "LOCAL_APP_AUTH_FAILED",
+    "LOCAL_APP_ACTION_FAILED"
   ];
   return known.includes(message) ? message : null;
 }
