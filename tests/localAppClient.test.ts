@@ -37,7 +37,7 @@ describe("LocalAppClient", () => {
     );
     vi.stubGlobal("fetch", fetchMock);
 
-    const client = new LocalAppClient("local_key", "http://localhost:8001/api");
+    const client = new LocalAppClient("local_token", "http://localhost:8001/api");
     const result = await client.getAppState();
 
     expect(result.currentBrainId).toBe("brain_1");
@@ -46,7 +46,7 @@ describe("LocalAppClient", () => {
       new URL("http://localhost:8001/api/app/state"),
       expect.objectContaining({
         method: "GET",
-        headers: expect.objectContaining({ Authorization: "Bearer local_key" })
+        headers: expect.objectContaining({ Authorization: "Bearer local_token" })
       })
     );
   });
@@ -55,7 +55,7 @@ describe("LocalAppClient", () => {
     const fetchMock = vi.fn().mockImplementation(() => Promise.resolve(jsonResponse({ success: true })));
     vi.stubGlobal("fetch", fetchMock);
 
-    const client = new LocalAppClient("local_key", "http://localhost:8001/api/");
+    const client = new LocalAppClient("local_token", "http://localhost:8001/api/");
     await client.openBrain("brain_1");
     await client.activateThought("brain_1", "thought_1");
     await client.closeBrainTab("brain_1");
@@ -77,10 +77,23 @@ describe("LocalAppClient", () => {
     );
   });
 
-  it("maps auth failures to LOCAL_APP_AUTH_FAILED without leaking the key", async () => {
-    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(new Response("Invalid API Key local_key", { status: 401 })));
+  it("requires a separate local API token before making requests", async () => {
+    const fetchMock = vi.fn().mockImplementation(() => Promise.resolve(jsonResponse({ success: true })));
+    vi.stubGlobal("fetch", fetchMock);
 
-    const client = new LocalAppClient("local_key", "http://localhost:8001/api");
+    const client = new LocalAppClient("", "http://localhost:8001/api");
+
+    await expect(client.getAppState()).rejects.toMatchObject({
+      status: 401,
+      message: "LOCAL_APP_TOKEN_REQUIRED"
+    });
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it("maps auth failures to LOCAL_APP_AUTH_FAILED without leaking the token", async () => {
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(new Response("Invalid API Key local_token", { status: 401 })));
+
+    const client = new LocalAppClient("local_token", "http://localhost:8001/api");
 
     await expect(client.getAppState()).rejects.toMatchObject({
       status: 401,
@@ -91,7 +104,7 @@ describe("LocalAppClient", () => {
   it("maps connection failures to LOCAL_APP_UNAVAILABLE", async () => {
     vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new TypeError("fetch failed")));
 
-    const client = new LocalAppClient("local_key", "http://localhost:8001/api");
+    const client = new LocalAppClient("local_token", "http://localhost:8001/api");
 
     await expect(client.getAppState()).rejects.toMatchObject({
       status: 503,

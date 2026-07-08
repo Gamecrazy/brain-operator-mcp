@@ -30,7 +30,7 @@ This keeps app-control behavior separate from `src/thebrain/client.ts`, which re
 
 The first version uses:
 
-- `THEBRAIN_API_KEY`: bearer token for Local API requests. The key must remain in `.env` only.
+- `THEBRAIN_LOCAL_API_TOKEN`: bearer token for Local API requests. The token must remain in `.env` only.
 - `THEBRAIN_LOCAL_BASE_URL`: Local API base URL, default `http://localhost:8001/api`.
 - `WRITE_TOOLS_ENABLED`: required for `open_brain`, `activate_thought`, and `close_brain_tab`.
 
@@ -75,6 +75,7 @@ The first version uses:
 ## Safety
 
 - Do not log or return `THEBRAIN_API_KEY`.
+- Do not log or return `THEBRAIN_LOCAL_API_TOKEN`.
 - Do not add arbitrary Local API request tools.
 - Keep `close_brain_tab` behind `WRITE_TOOLS_ENABLED`; it changes local client UI state even though it does not delete data.
 - Audit successful app-control actions with action name, `brainId`, and `thoughtId` where applicable.
@@ -84,8 +85,9 @@ The first version uses:
 
 Local API errors should be normalized through the same user-facing MCP result shape as existing tools:
 
+- `LOCAL_APP_TOKEN_REQUIRED`: no Local API token is configured.
 - `LOCAL_APP_UNAVAILABLE`: local client is closed, port is wrong, or Local API is disabled.
-- `LOCAL_APP_AUTH_FAILED`: Local API rejected the API key.
+- `LOCAL_APP_AUTH_FAILED`: Local API rejected the configured token.
 - `LOCAL_APP_ACTION_FAILED`: request reached Local API but the action failed.
 - `BRAIN_ID_REQUIRED`: no input brain ID and no configured default brain ID.
 
@@ -107,7 +109,7 @@ Use test-first implementation:
 Manual smoke test with the real desktop client:
 
 1. Enable Local API in TheBrain desktop settings.
-2. Put the Local API key in `THEBRAIN_API_KEY`.
+2. Put the Local API token in `THEBRAIN_LOCAL_API_TOKEN`.
 3. Start MCP server.
 4. Call `get_app_state`.
 5. Call `open_brain`.

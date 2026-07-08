@@ -20,6 +20,7 @@ function knownCode(message: string): string | null {
     "PLAN_NOT_PENDING",
     "PLAN_VALIDATION_FAILED",
     "UNSAFE_URL",
+    "LOCAL_APP_TOKEN_REQUIRED",
     "LOCAL_APP_UNAVAILABLE",
     "LOCAL_APP_AUTH_FAILED",
     "LOCAL_APP_ACTION_FAILED"

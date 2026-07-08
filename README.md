@@ -103,7 +103,7 @@ Plan workflow:
 The MCP server can control the local TheBrain desktop client through TheBrain Local API.
 
 1. In TheBrain desktop, enable Local API in settings.
-2. Copy the Local API key into `THEBRAIN_API_KEY` in `.env`.
+2. Copy the Local API token into `THEBRAIN_LOCAL_API_TOKEN` in `.env`.
 3. Set `THEBRAIN_LOCAL_BASE_URL` if your Local API is not on `http://localhost:8001/api`.
 
 Local-only tools:
@@ -199,8 +199,9 @@ Then call `commit_change_plan` with:
 - `WRITE_DISABLED`: set `WRITE_TOOLS_ENABLED=true` when you intentionally want writes.
 - `UNSAFE_URL`: use a public `http` or `https` URL.
 - `PLAN_NOT_PENDING`: the plan was already committed, discarded, or expired.
+- `LOCAL_APP_TOKEN_REQUIRED`: set `THEBRAIN_LOCAL_API_TOKEN` from TheBrain desktop Local API settings.
 - `LOCAL_APP_UNAVAILABLE`: enable TheBrain Local API and check `THEBRAIN_LOCAL_BASE_URL`.
-- `LOCAL_APP_AUTH_FAILED`: use the Local API key from TheBrain desktop settings.
+- `LOCAL_APP_AUTH_FAILED`: use the Local API token from TheBrain desktop settings.
 - `LOCAL_APP_ACTION_FAILED`: check the brain/thought IDs and local client state.
 
 ## Verification

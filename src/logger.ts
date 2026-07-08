@@ -8,6 +8,7 @@ export const logger = pino({
       "req.headers.authorization",
       "headers.authorization",
       "THEBRAIN_API_KEY",
+      "THEBRAIN_LOCAL_API_TOKEN",
       "apiKey",
       "token",
       "accessToken"

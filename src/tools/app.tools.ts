@@ -20,7 +20,11 @@ export function registerAppTools(server: McpServer, ctx: ToolContext) {
         const state = await ctx.localApp.getAppState();
         return ok({ state }, "Local app state loaded.", { raw: state });
       } catch (error) {
-        return toolFailure("LOCAL_APP_UNAVAILABLE", error, "Enable TheBrain Local API and check THEBRAIN_LOCAL_BASE_URL.");
+        return toolFailure(
+          "LOCAL_APP_UNAVAILABLE",
+          error,
+          "Set THEBRAIN_LOCAL_API_TOKEN, enable TheBrain Local API, and check THEBRAIN_LOCAL_BASE_URL."
+        );
       }
     }
   );
@@ -39,7 +43,7 @@ export function registerAppTools(server: McpServer, ctx: ToolContext) {
         await auditLog("open_brain", { brainId });
         return ok({ brainId }, "Brain opened in local app.", { raw });
       } catch (error) {
-        return toolFailure("LOCAL_APP_ACTION_FAILED", error, "Check brainId and Local API settings.");
+        return toolFailure("LOCAL_APP_ACTION_FAILED", error, "Check brainId, THEBRAIN_LOCAL_API_TOKEN, and Local API settings.");
       }
     }
   );
@@ -58,7 +62,11 @@ export function registerAppTools(server: McpServer, ctx: ToolContext) {
         await auditLog("activate_thought", { brainId, thoughtId: input.thoughtId });
         return ok({ brainId, thoughtId: input.thoughtId }, "Thought activated in local app.", { raw });
       } catch (error) {
-        return toolFailure("LOCAL_APP_ACTION_FAILED", error, "Check brainId, thoughtId, and Local API settings.");
+        return toolFailure(
+          "LOCAL_APP_ACTION_FAILED",
+          error,
+          "Check brainId, thoughtId, THEBRAIN_LOCAL_API_TOKEN, and Local API settings."
+        );
       }
     }
   );
@@ -77,7 +85,7 @@ export function registerAppTools(server: McpServer, ctx: ToolContext) {
         await auditLog("close_brain_tab", { brainId });
         return ok({ brainId }, "Brain tab closed in local app.", { raw });
       } catch (error) {
-        return toolFailure("LOCAL_APP_ACTION_FAILED", error, "Check brainId and Local API settings.");
+        return toolFailure("LOCAL_APP_ACTION_FAILED", error, "Check brainId, THEBRAIN_LOCAL_API_TOKEN, and Local API settings.");
       }
     }
   );

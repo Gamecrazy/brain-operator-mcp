@@ -2,7 +2,8 @@
 
 ## Assets
 
-- TheBrain API key.
+- TheBrain Cloud API key.
+- TheBrain desktop Local API token.
 - User brain IDs, thought IDs, notes, links, and attachments.
 - Local plan store data in `.data/plans.json`.
 - Local audit log data in `.data/audit.log`.
@@ -18,7 +19,8 @@
 
 ## Controls
 
-- API key is loaded only from `THEBRAIN_API_KEY`.
+- Cloud API key is loaded only from `THEBRAIN_API_KEY`.
+- TheBrain desktop Local API token is loaded only from `THEBRAIN_LOCAL_API_TOKEN`.
 - Logger redacts authorization headers and token-like keys.
 - Tool errors are sanitized before model-visible output.
 - Destructive tools are not registered.

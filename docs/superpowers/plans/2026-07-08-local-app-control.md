@@ -47,7 +47,7 @@
 - Test: `tests/localAppClient.test.ts`
 
 **Interfaces:**
-- Consumes: `config.THEBRAIN_API_KEY`, `config.THEBRAIN_LOCAL_BASE_URL`, `fetchWithTimeout()`, `TheBrainApiError`.
+- Consumes: `config.THEBRAIN_LOCAL_API_TOKEN`, `config.THEBRAIN_LOCAL_BASE_URL`, `fetchWithTimeout()`, `TheBrainApiError`.
 - Produces:
   - `type AppStateTab`
   - `type AppState`
@@ -101,7 +101,7 @@ describe("LocalAppClient", () => {
     );
     vi.stubGlobal("fetch", fetchMock);
 
-    const client = new LocalAppClient("local_key", "http://localhost:8001/api");
+    const client = new LocalAppClient("local_token", "http://localhost:8001/api");
     const result = await client.getAppState();
 
     expect(result.currentBrainId).toBe("brain_1");
@@ -110,7 +110,7 @@ describe("LocalAppClient", () => {
       new URL("http://localhost:8001/api/app/state"),
       expect.objectContaining({
         method: "GET",
-        headers: expect.objectContaining({ Authorization: "Bearer local_key" })
+        headers: expect.objectContaining({ Authorization: "Bearer local_token" })
       })
     );
   });
@@ -119,7 +119,7 @@ describe("LocalAppClient", () => {
     const fetchMock = vi.fn().mockResolvedValue(jsonResponse({ success: true }));
     vi.stubGlobal("fetch", fetchMock);
 
-    const client = new LocalAppClient("local_key", "http://localhost:8001/api/");
+    const client = new LocalAppClient("local_token", "http://localhost:8001/api/");
     await client.openBrain("brain_1");
     await client.activateThought("brain_1", "thought_1");
     await client.closeBrainTab("brain_1");
@@ -142,9 +142,9 @@ describe("LocalAppClient", () => {
   });
 
   it("maps auth failures to LOCAL_APP_AUTH_FAILED without leaking the key", async () => {
-    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(new Response("Invalid API Key local_key", { status: 401 })));
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(new Response("Invalid API Key local_token", { status: 401 })));
 
-    const client = new LocalAppClient("local_key", "http://localhost:8001/api");
+    const client = new LocalAppClient("local_token", "http://localhost:8001/api");
 
     await expect(client.getAppState()).rejects.toMatchObject({
       status: 401,
@@ -155,7 +155,7 @@ describe("LocalAppClient", () => {
   it("maps connection failures to LOCAL_APP_UNAVAILABLE", async () => {
     vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new TypeError("fetch failed")));
 
-    const client = new LocalAppClient("local_key", "http://localhost:8001/api");
+    const client = new LocalAppClient("local_token", "http://localhost:8001/api");
 
     await expect(client.getAppState()).rejects.toMatchObject({
       status: 503,
@@ -183,6 +183,7 @@ Modify `src/config.ts` so the schema includes the local API base URL:
 const EnvSchema = z.object({
   THEBRAIN_API_KEY: z.string().min(1),
   THEBRAIN_BASE_URL: z.string().url().default("https://api.bra.in"),
+  THEBRAIN_LOCAL_API_TOKEN: z.string().optional().default(""),
   THEBRAIN_LOCAL_BASE_URL: z.string().url().default("http://localhost:8001/api"),
   THEBRAIN_MODE: z.enum(["cloud", "local"]).default("cloud"),
   THEBRAIN_DEFAULT_BRAIN_ID: z.string().optional().default(""),
@@ -218,7 +219,7 @@ export type AppState = {
 
 export class LocalAppClient {
   constructor(
-    private readonly apiKey = config.THEBRAIN_API_KEY,
+    private readonly apiToken = config.THEBRAIN_LOCAL_API_TOKEN,
     private readonly baseUrl = config.THEBRAIN_LOCAL_BASE_URL
   ) {}
 
@@ -229,7 +230,7 @@ export class LocalAppClient {
       const response = await fetchWithTimeout(url, {
         method,
         headers: {
-          Authorization: `Bearer ${this.apiKey}`
+          Authorization: `Bearer ${this.apiToken}`
         }
       });
       const contentType = response.headers.get("content-type") ?? "";
@@ -287,7 +288,8 @@ Modify the `known` array in `src/tools/toolUtils.ts`:
 
 ```ts
     "UNSAFE_URL",
-    "LOCAL_APP_UNAVAILABLE",
+  "LOCAL_APP_TOKEN_REQUIRED",
+  "LOCAL_APP_UNAVAILABLE",
     "LOCAL_APP_AUTH_FAILED",
     "LOCAL_APP_ACTION_FAILED"
 ```
@@ -661,10 +663,11 @@ git commit -m "feat: add local app mcp tools"
 
 - [ ] **Step 1: Update `.env.example`**
 
-Add `THEBRAIN_LOCAL_BASE_URL` near existing TheBrain config:
+Add `THEBRAIN_LOCAL_API_TOKEN` and `THEBRAIN_LOCAL_BASE_URL` near existing TheBrain config:
 
 ```dotenv
 # Local API used by local desktop app-control tools.
+THEBRAIN_LOCAL_API_TOKEN=replace_with_your_thebrain_local_api_token
 THEBRAIN_LOCAL_BASE_URL=http://localhost:8001/api
 ```
 
@@ -678,7 +681,7 @@ Add a Local App Control section to `README.md`:
 The MCP server can also control the local TheBrain desktop client through TheBrain Local API.
 
 1. In TheBrain desktop, enable Local API in settings.
-2. Copy the Local API key into `THEBRAIN_API_KEY` in `.env`.
+2. Copy the Local API token into `THEBRAIN_LOCAL_API_TOKEN` in `.env`.
 3. Set `THEBRAIN_LOCAL_BASE_URL` if your Local API is not on `http://localhost:8001/api`.
 
 Local-only tools:
@@ -709,7 +712,7 @@ Add to `docs/tool-contract.md`:
 Add local error codes to the error list:
 
 ```md
-`LOCAL_APP_UNAVAILABLE`, `LOCAL_APP_AUTH_FAILED`, `LOCAL_APP_ACTION_FAILED`
+`LOCAL_APP_TOKEN_REQUIRED`, `LOCAL_APP_UNAVAILABLE`, `LOCAL_APP_AUTH_FAILED`, `LOCAL_APP_ACTION_FAILED`
 ```
 
 - [ ] **Step 4: Update development guide**
@@ -740,13 +743,13 @@ Expected: all commands pass. The integration test remains skipped unless `RUN_TH
 
 - [ ] **Step 6: Optional manual local smoke check**
 
-Only run this after confirming the local TheBrain desktop Local API key is set in `.env`.
+Only run this after confirming the local TheBrain desktop Local API token is set in `.env`.
 
 ```bash
 set -a
 . ./.env
 set +a
-curl -sS -H "Authorization: Bearer ${THEBRAIN_API_KEY}" "${THEBRAIN_LOCAL_BASE_URL:-http://localhost:8001/api}/app/state"
+curl -sS -H "Authorization: Bearer ${THEBRAIN_LOCAL_API_TOKEN}" "${THEBRAIN_LOCAL_BASE_URL:-http://localhost:8001/api}/app/state"
 ```
 
 Expected: JSON containing `currentBrainId`, `isLoggedIn`, and `tabs`. Do not print or commit the API key.

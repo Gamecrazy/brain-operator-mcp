@@ -23,18 +23,21 @@ export type AppState = {
 
 export class LocalAppClient {
   constructor(
-    private readonly apiKey = config.THEBRAIN_API_KEY,
+    private readonly apiToken = config.THEBRAIN_LOCAL_API_TOKEN,
     private readonly baseUrl = config.THEBRAIN_LOCAL_BASE_URL
   ) {}
 
   async request<T>(method: string, path: string): Promise<T> {
     const url = new URL(path.replace(/^\/+/, ""), ensureTrailingSlash(this.baseUrl));
+    if (!this.apiToken) {
+      throw new TheBrainApiError(401, "LOCAL_APP_TOKEN_REQUIRED", method, path);
+    }
 
     try {
       const response = await fetchWithTimeout(url, {
         method,
         headers: {
-          Authorization: `Bearer ${this.apiKey}`
+          Authorization: `Bearer ${this.apiToken}`
         }
       });
       const contentType = response.headers.get("content-type") ?? "";
