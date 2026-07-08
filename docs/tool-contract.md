@@ -44,6 +44,7 @@ Read tools use TheBrain Cloud API in `THEBRAIN_MODE=cloud` and TheBrain desktop 
 - `update_thought`: updates `name`, `label`, or `typeId`. Requires at least one patch field.
 - `create_link`: creates a relation between two thoughts.
 - `append_note`: appends markdown only. It never overwrites an existing note.
+- `replace_note`: replaces the entire Markdown note for a thought. Requires writes enabled. Calls `POST /notes/{brainId}/{thoughtId}/update`.
 - `add_url_attachment`: adds a public HTTP or HTTPS URL attachment.
 
 ## Local App Control Tools

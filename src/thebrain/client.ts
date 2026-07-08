@@ -165,6 +165,12 @@ export class TheBrainClient {
     });
   }
 
+  updateNote(brainId: string, thoughtId: string, markdown: string) {
+    return this.request<unknown>("POST", endpoints.updateNote(brainId, thoughtId), {
+      body: { markdown }
+    });
+  }
+
   addUrlAttachment(brainId: string, thoughtId: string, url: string, name?: string) {
     return this.request<unknown>("POST", endpoints.addUrlAttachment(brainId, thoughtId), {
       body: { url, name }

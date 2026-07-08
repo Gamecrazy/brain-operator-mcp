@@ -3,7 +3,8 @@ import {
   ActivateThoughtInputSchema,
   AddUrlAttachmentInputSchema,
   AppendNoteInputSchema,
-  AppBrainInputSchema
+  AppBrainInputSchema,
+  ReplaceNoteInputSchema
 } from "../src/mcp/schemas.js";
 
 describe("tool schemas", () => {
@@ -19,6 +20,15 @@ describe("tool schemas", () => {
   it("rejects notes over the configured limit", () => {
     expect(() =>
       AppendNoteInputSchema.parse({
+        thoughtId: "thought_1",
+        markdown: "x".repeat(10001)
+      })
+    ).toThrow();
+  });
+
+  it("rejects replacement notes over the configured limit", () => {
+    expect(() =>
+      ReplaceNoteInputSchema.parse({
         thoughtId: "thought_1",
         markdown: "x".repeat(10001)
       })

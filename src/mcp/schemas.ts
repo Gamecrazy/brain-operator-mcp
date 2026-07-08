@@ -70,6 +70,12 @@ export const AppendNoteInputSchema = z.object({
   addSeparator: z.boolean().default(true)
 });
 
+export const ReplaceNoteInputSchema = z.object({
+  brainId: z.string().optional(),
+  thoughtId: z.string().min(1),
+  markdown: z.string().min(1).max(policy.maxNoteChars)
+});
+
 export const AddUrlAttachmentInputSchema = z.object({
   brainId: z.string().optional(),
   thoughtId: z.string().min(1),

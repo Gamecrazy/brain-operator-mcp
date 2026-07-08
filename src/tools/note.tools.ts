@@ -1,6 +1,6 @@
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { ok } from "../mcp/result.js";
-import { AppendNoteInputSchema, GetNoteInputSchema } from "../mcp/schemas.js";
+import { AppendNoteInputSchema, GetNoteInputSchema, ReplaceNoteInputSchema } from "../mcp/schemas.js";
 import { auditLog } from "../safety/auditLog.js";
 import { requireWriteEnabled } from "../safety/policy.js";
 import { resolveBrainId } from "../safety/validators.js";
@@ -46,6 +46,31 @@ export function registerNoteTools(server: McpServer, ctx: ToolContext) {
         return ok({ brainId, thoughtId: input.thoughtId, chars: input.markdown.length }, "Note appended.", { raw });
       } catch (error) {
         return toolFailure("APPEND_NOTE_FAILED", error, "Check thoughtId and note length.");
+      }
+    }
+  );
+
+  server.registerTool(
+    "replace_note",
+    {
+      description:
+        "Replace the entire Markdown note for an existing TheBrain thought. Write operation. Overwrites existing note content.",
+      inputSchema: ReplaceNoteInputSchema
+    },
+    async (input) => {
+      try {
+        requireWriteEnabled();
+        const brainId = resolveBrainId(input.brainId);
+        const raw = await ctx.brain.updateNote(brainId, input.thoughtId, input.markdown);
+        await auditLog("replace_note", {
+          brainId,
+          thoughtId: input.thoughtId,
+          markdownPreview: input.markdown.slice(0, 500),
+          chars: input.markdown.length
+        });
+        return ok({ brainId, thoughtId: input.thoughtId, chars: input.markdown.length }, "Note replaced.", { raw });
+      } catch (error) {
+        return toolFailure("REPLACE_NOTE_FAILED", error, "Check thoughtId, note length, and write settings.");
       }
     }
   );

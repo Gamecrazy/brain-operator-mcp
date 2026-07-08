@@ -132,4 +132,21 @@ describe("TheBrainClient", () => {
       })
     );
   });
+
+  it("updates note content through the update endpoint", async () => {
+    const fetchMock = vi.fn().mockResolvedValue(jsonResponse({ success: true }));
+    vi.stubGlobal("fetch", fetchMock);
+
+    const client = new TheBrainClient("local_token", "http://localhost:8001/api");
+    await client.updateNote("brain_1", "thought_1", "replacement markdown");
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      new URL("http://localhost:8001/api/notes/brain_1/thought_1/update"),
+      expect.objectContaining({
+        method: "POST",
+        headers: expect.objectContaining({ "Content-Type": "application/json" }),
+        body: JSON.stringify({ markdown: "replacement markdown" })
+      })
+    );
+  });
 });

@@ -16,6 +16,8 @@ export const endpoints = {
     `/notes/${encodeURIComponent(brainId)}/${encodeURIComponent(thoughtId)}${suffix}`,
   appendNote: (brainId: string, thoughtId: string) =>
     `/notes/${encodeURIComponent(brainId)}/${encodeURIComponent(thoughtId)}/append`,
+  updateNote: (brainId: string, thoughtId: string) =>
+    `/notes/${encodeURIComponent(brainId)}/${encodeURIComponent(thoughtId)}/update`,
   addUrlAttachment: (brainId: string, thoughtId: string) =>
     `/attachments/${encodeURIComponent(brainId)}/${encodeURIComponent(thoughtId)}/url`,
   listAttachments: (brainId: string, thoughtId: string) =>

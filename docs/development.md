@@ -20,6 +20,11 @@ This project is maintained as a small, layered MCP server.
 5. Add audit logging for successful writes.
 6. Update `docs/tool-contract.md` and this guide when behavior changes.
 
+## Note Write Tools
+
+`append_note` appends Markdown and must not overwrite existing content.
+`replace_note` replaces the entire Markdown note and must remain separate from `append_note`; do not hide full-note replacement behind an append mode flag.
+
 ## TheBrain Adapter Rule
 
 Do not leak TheBrain API quirks into MCP tool contracts. Keep field mapping in `src/thebrain/client.ts`, `src/thebrain/endpoints.ts`, or a focused adapter helper.
