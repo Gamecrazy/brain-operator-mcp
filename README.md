@@ -15,6 +15,8 @@ The server defaults to:
 
 - `GET /health`
 - `POST /mcp`
+- `GET /brain/health`
+- `POST /brain/mcp`
 - TheBrain Cloud API base URL: `https://api.bra.in`
 - TheBrain Local API base URL: `http://localhost:8001/api`
 
@@ -61,6 +63,28 @@ If `MCP_API_TOKEN` is set, clients must send:
 
 ```http
 Authorization: Bearer <MCP_API_TOKEN>
+```
+
+### Shared Domain Path Routing
+
+If `mcp.gamescrazy.win` is already used by another MCP service, keep that service on `/mcp` and expose this server under `/brain/mcp`.
+
+Cloudflared ingress example:
+
+```yaml
+ingress:
+  - hostname: mcp.gamescrazy.win
+    path: /brain/.*
+    service: http://127.0.0.1:3000
+  - hostname: mcp.gamescrazy.win
+    service: http://127.0.0.1:7676
+  - service: http_status:404
+```
+
+Then use this MCP endpoint:
+
+```text
+https://mcp.gamescrazy.win/brain/mcp
 ```
 
 ## Tools

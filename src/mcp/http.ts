@@ -13,11 +13,11 @@ export function createHttpApp() {
   app.use(cors({ origin: true }));
   app.use(rateLimit({ windowMs: 60_000, limit: 120 }));
 
-  app.get("/health", (_req, res) => {
+  const healthHandler: express.RequestHandler = (_req, res) => {
     res.json({ ok: true, name: config.MCP_SERVER_NAME, version: config.MCP_SERVER_VERSION });
-  });
+  };
 
-  app.post("/mcp", async (req, res) => {
+  const mcpHandler: express.RequestHandler = async (req, res) => {
     try {
       if (config.MCP_API_TOKEN) {
         const header = req.header("authorization") ?? "";
@@ -35,7 +35,12 @@ export function createHttpApp() {
       logger.error({ error }, "MCP request failed");
       if (!res.headersSent) res.status(500).json({ error: "MCP request failed" });
     }
-  });
+  };
+
+  app.get("/health", healthHandler);
+  app.get("/brain/health", healthHandler);
+  app.post("/mcp", mcpHandler);
+  app.post("/brain/mcp", mcpHandler);
 
   return app;
 }
