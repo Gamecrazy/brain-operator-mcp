@@ -9,6 +9,7 @@ import { createMcpServer } from "./createServer.js";
 export function createHttpApp() {
   const app = express();
 
+  app.set("trust proxy", 1);
   app.use(express.json({ limit: "2mb" }));
   app.use(cors({ origin: true }));
   app.use(rateLimit({ windowMs: 60_000, limit: 120 }));

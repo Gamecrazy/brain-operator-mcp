@@ -39,6 +39,24 @@ describe("HTTP routes", () => {
     });
   });
 
+  it("accepts proxied requests from Cloudflare tunnels", async () => {
+    const baseUrl = await startTestServer();
+
+    const response = await fetch(`${baseUrl}/brain/health`, {
+      headers: {
+        "X-Forwarded-For": "203.0.113.10"
+      }
+    });
+
+    expect(response.status).toBe(200);
+  });
+
+  it("trusts the first proxy hop for cloudflared", () => {
+    const app = createHttpApp();
+
+    expect(app.get("trust proxy")).toBe(1);
+  });
+
   it("serves MCP under /brain/mcp", async () => {
     const baseUrl = await startTestServer();
     const client = new Client({ name: "route-test", version: "0.0.0" });

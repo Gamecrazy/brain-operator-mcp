@@ -27,6 +27,8 @@ MCP responses use:
 
 ## Read Tools
 
+Read tools use TheBrain Cloud API in `THEBRAIN_MODE=cloud` and TheBrain desktop Local API in `THEBRAIN_MODE=local`.
+
 - `health_check`: no input. Returns server mode, version, write flags, and default brain status.
 - `list_brains`: no input. Calls `GET /brains`.
 - `get_brain`: optional `brainId`. Calls `GET /brains/{brainId}`.

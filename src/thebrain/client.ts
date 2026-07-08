@@ -1,4 +1,4 @@
-import { config } from "../config.js";
+import { type Config, config } from "../config.js";
 import { fetchWithTimeout } from "../util/fetchWithTimeout.js";
 import { endpoints } from "./endpoints.js";
 import { TheBrainApiError } from "./errors.js";
@@ -13,15 +13,38 @@ export type RequestOptions = {
 
 const RETRYABLE_STATUSES = new Set([429, 502, 503, 504]);
 
+type TheBrainConnectionConfig = Pick<
+  Config,
+  "THEBRAIN_API_KEY" | "THEBRAIN_BASE_URL" | "THEBRAIN_LOCAL_API_TOKEN" | "THEBRAIN_LOCAL_BASE_URL" | "THEBRAIN_MODE"
+>;
+
+export function resolveTheBrainConnection(source: TheBrainConnectionConfig = config) {
+  if (source.THEBRAIN_MODE === "local") {
+    return {
+      apiKey: source.THEBRAIN_LOCAL_API_TOKEN,
+      baseUrl: source.THEBRAIN_LOCAL_BASE_URL
+    };
+  }
+
+  return {
+    apiKey: source.THEBRAIN_API_KEY,
+    baseUrl: source.THEBRAIN_BASE_URL
+  };
+}
+
 function delay(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 export class TheBrainClient {
-  constructor(
-    private readonly apiKey = config.THEBRAIN_API_KEY,
-    private readonly baseUrl = config.THEBRAIN_BASE_URL
-  ) {}
+  private readonly apiKey: string;
+  private readonly baseUrl: string;
+
+  constructor(apiKey?: string, baseUrl?: string) {
+    const defaults = resolveTheBrainConnection();
+    this.apiKey = apiKey ?? defaults.apiKey;
+    this.baseUrl = baseUrl ?? defaults.baseUrl;
+  }
 
   async request<T>(method: string, path: string, options: RequestOptions = {}): Promise<T> {
     const attempts = method.toUpperCase() === "GET" || options.idempotencyKey ? 3 : 1;
@@ -47,7 +70,7 @@ export class TheBrainClient {
   }
 
   private async requestOnce<T>(method: string, path: string, options: RequestOptions): Promise<T> {
-    const url = new URL(path, this.baseUrl);
+    const url = new URL(path.replace(/^\/+/, ""), ensureTrailingSlash(this.baseUrl));
     for (const [key, value] of Object.entries(options.query ?? {})) {
       if (value !== undefined && value !== null && value !== "") {
         url.searchParams.set(key, String(value));
@@ -151,4 +174,8 @@ export class TheBrainClient {
   listAttachments(brainId: string, thoughtId: string) {
     return this.request<unknown>("GET", endpoints.listAttachments(brainId, thoughtId));
   }
+}
+
+function ensureTrailingSlash(value: string) {
+  return value.endsWith("/") ? value : `${value}/`;
 }

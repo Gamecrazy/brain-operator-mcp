@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { TheBrainClient } from "../src/thebrain/client.js";
+import { resolveTheBrainConnection, TheBrainClient } from "../src/thebrain/client.js";
 import { TheBrainApiError } from "../src/thebrain/errors.js";
 
 function jsonResponse(body: unknown, status = 200) {
@@ -101,5 +101,35 @@ describe("TheBrainClient", () => {
 
     expect(result).toEqual({ ok: true });
     expect(fetchMock).toHaveBeenCalledTimes(2);
+  });
+
+  it("uses the local API token and base URL when TheBrain mode is local", () => {
+    const connection = resolveTheBrainConnection({
+      THEBRAIN_MODE: "local",
+      THEBRAIN_API_KEY: "cloud_key",
+      THEBRAIN_BASE_URL: "https://api.bra.in",
+      THEBRAIN_LOCAL_API_TOKEN: "local_token",
+      THEBRAIN_LOCAL_BASE_URL: "http://localhost:8001/api"
+    });
+
+    expect(connection).toEqual({
+      apiKey: "local_token",
+      baseUrl: "http://localhost:8001/api"
+    });
+  });
+
+  it("preserves base URL path prefixes for local API requests", async () => {
+    const fetchMock = vi.fn().mockResolvedValue(jsonResponse({ ok: true }));
+    vi.stubGlobal("fetch", fetchMock);
+
+    const client = new TheBrainClient("local_token", "http://localhost:8001/api");
+    await client.getNote("brain_1", "thought_1", "markdown");
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      new URL("http://localhost:8001/api/notes/brain_1/thought_1"),
+      expect.objectContaining({
+        headers: expect.objectContaining({ Authorization: "Bearer local_token" })
+      })
+    );
   });
 });

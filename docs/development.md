@@ -23,6 +23,8 @@ This project is maintained as a small, layered MCP server.
 ## TheBrain Adapter Rule
 
 Do not leak TheBrain API quirks into MCP tool contracts. Keep field mapping in `src/thebrain/client.ts`, `src/thebrain/endpoints.ts`, or a focused adapter helper.
+`src/thebrain/client.ts` selects its default connection from `THEBRAIN_MODE`: `cloud` uses `THEBRAIN_API_KEY` and `THEBRAIN_BASE_URL`; `local` uses `THEBRAIN_LOCAL_API_TOKEN` and `THEBRAIN_LOCAL_BASE_URL`.
+When the selected base URL includes a path prefix such as `/api`, request URL construction must preserve that prefix.
 
 ## Local App Control Adapter
 

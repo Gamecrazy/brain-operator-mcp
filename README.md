@@ -20,6 +20,8 @@ The server defaults to:
 - TheBrain Cloud API base URL: `https://api.bra.in`
 - TheBrain Local API base URL: `http://localhost:8001/api`
 
+Set `THEBRAIN_MODE=local` when you want the normal brain, thought, note, link, and attachment tools to use TheBrain desktop Local API instead of TheBrain Cloud API. In local mode those tools authenticate with `THEBRAIN_LOCAL_API_TOKEN` and use `THEBRAIN_LOCAL_BASE_URL`.
+
 ## Health
 
 ```bash
