@@ -17,7 +17,7 @@ const EnvSchema = z.object({
   THEBRAIN_DEFAULT_BRAIN_ID: z.string().optional().default(""),
 
   MCP_SERVER_NAME: z.string().default("brain-operator-mcp"),
-  MCP_SERVER_VERSION: z.string().default("0.1.0"),
+  MCP_SERVER_VERSION: z.string().default("0.1.1"),
   PORT: z.coerce.number().int().positive().default(3000),
 
   WRITE_TOOLS_ENABLED: BooleanFromEnv.default(true),

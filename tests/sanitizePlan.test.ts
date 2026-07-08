@@ -33,6 +33,12 @@ describe("sanitizePlan", () => {
           op: "append_note",
           targetRef: "root",
           markdown: "secret game design details"
+        },
+        {
+          id: "c3",
+          op: "replace_note",
+          targetRef: "root",
+          markdown: "secret replacement details"
         }
       ]
     };
@@ -45,6 +51,7 @@ describe("sanitizePlan", () => {
     expect(serialized).not.toContain("Existing private thought");
     expect(sanitized.changes[0]).toMatchObject({ label: "[REDACTED]", nameChars: 17 });
     expect(sanitized.changes[1]).toMatchObject({ markdown: "[REDACTED]", markdownChars: 26 });
+    expect(sanitized.changes[2]).toMatchObject({ markdown: "[REDACTED]", markdownChars: 26 });
     expect(sanitized.duplicateCandidates).toEqual([{ changeId: "c1", candidateCount: 1 }]);
   });
 
@@ -56,6 +63,7 @@ describe("sanitizePlan", () => {
       createdThoughts: [{ clientRef: "root", thoughtId: "thought_1", name: "Sensitive thought" }],
       createdLinks: [],
       appendedNotes: [],
+      replacedNotes: [],
       failures: []
     };
 

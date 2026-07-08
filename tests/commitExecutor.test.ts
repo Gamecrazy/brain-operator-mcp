@@ -99,4 +99,28 @@ describe("commitChangePlan", () => {
       }
     ]);
   });
+
+  it("replaces notes in batch plans", async () => {
+    const calls: unknown[] = [];
+    const plan = basePlan([
+      {
+        id: "c1",
+        op: "replace_note",
+        targetRef: "thought_existing",
+        markdown: "replacement markdown"
+      }
+    ]);
+    const brain = {
+      updateNote: async (_brainId: string, thoughtId: string, markdown: string) => {
+        calls.push({ thoughtId, markdown });
+        return { success: true };
+      }
+    };
+
+    const result = await commitChangePlan({ brain, planStore: new MemoryPlanStore(plan), planId: "plan_1" });
+
+    expect(result.partialFailure).toBe(false);
+    expect(calls).toEqual([{ thoughtId: "thought_existing", markdown: "replacement markdown" }]);
+    expect(result.replacedNotes).toEqual([{ changeId: "c1", thoughtId: "thought_existing", chars: 20 }]);
+  });
 });

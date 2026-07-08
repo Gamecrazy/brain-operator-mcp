@@ -9,6 +9,7 @@ type BrainWriteClient = {
   createThought?: (brainId: string, body: unknown) => Promise<unknown>;
   createLink?: (brainId: string, body: unknown) => Promise<unknown>;
   appendNote?: (brainId: string, thoughtId: string, markdown: string) => Promise<unknown>;
+  updateNote?: (brainId: string, thoughtId: string, markdown: string) => Promise<unknown>;
 };
 
 export type CommitFailure = {
@@ -24,6 +25,7 @@ export type CommitResult = {
   createdThoughts: Array<{ clientRef: string; thoughtId: string; name: string }>;
   createdLinks: Array<{ changeId: string; linkId?: string }>;
   appendedNotes: Array<{ changeId: string; thoughtId: string; chars: number }>;
+  replacedNotes: Array<{ changeId: string; thoughtId: string; chars: number }>;
   failures: CommitFailure[];
 };
 
@@ -47,6 +49,7 @@ export async function commitChangePlan(input: {
     createdThoughts: [],
     createdLinks: [],
     appendedNotes: [],
+    replacedNotes: [],
     failures: []
   };
 
@@ -113,6 +116,15 @@ async function executeChange(
     if (!thoughtId) throw new Error(`Unable to resolve note ref: ${change.targetRef}`);
     await brain.appendNote(plan.brainId, thoughtId, change.markdown);
     result.appendedNotes.push({ changeId: change.id, thoughtId, chars: change.markdown.length });
+    return;
+  }
+
+  if (change.op === "replace_note") {
+    if (!brain.updateNote) throw new Error("updateNote unavailable");
+    const thoughtId = resolveRef(change.targetRef, refMap);
+    if (!thoughtId) throw new Error(`Unable to resolve note ref: ${change.targetRef}`);
+    await brain.updateNote(plan.brainId, thoughtId, change.markdown);
+    result.replacedNotes.push({ changeId: change.id, thoughtId, chars: change.markdown.length });
   }
 }
 

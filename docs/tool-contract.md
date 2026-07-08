@@ -63,6 +63,8 @@ Local app-control tools authenticate with `THEBRAIN_LOCAL_API_TOKEN`, not `THEBR
 - `discard_change_plan`: marks a stored plan as discarded.
 - `commit_change_plan`: executes a stored plan. Accepts only `planId` and `confirm: true`. Returns IDs and counts, not full imported content.
 
+Batch change ops include `create_thought`, `create_link`, `append_note`, and `replace_note`. `replace_note` overwrites the target note Markdown during commit.
+
 ## Error Codes
 
 Common codes include `BRAIN_ID_REQUIRED`, `WRITE_DISABLED`, `UNSAFE_URL`, `RELATION_REQUIRED`, `NO_PATCH_FIELDS`, `PLAN_NOT_FOUND`, `PLAN_EXPIRED`, `PLAN_NOT_PENDING`, `PLAN_VALIDATION_FAILED`, `LOCAL_APP_TOKEN_REQUIRED`, `LOCAL_APP_UNAVAILABLE`, `LOCAL_APP_AUTH_FAILED`, `LOCAL_APP_ACTION_FAILED`, and `UNKNOWN_ERROR`.

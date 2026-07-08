@@ -27,10 +27,18 @@ export const AppendNoteChangeSchema = z.object({
   markdown: z.string().min(1).max(policy.maxNoteChars)
 });
 
+export const ReplaceNoteChangeSchema = z.object({
+  id: z.string().min(1),
+  op: z.literal("replace_note"),
+  targetRef: z.string().min(1),
+  markdown: z.string().min(1).max(policy.maxNoteChars)
+});
+
 export const ChangeSchema = z.discriminatedUnion("op", [
   CreateThoughtChangeSchema,
   CreateLinkChangeSchema,
-  AppendNoteChangeSchema
+  AppendNoteChangeSchema,
+  ReplaceNoteChangeSchema
 ]);
 
 export const ChangePlanSchema = z.object({
@@ -47,5 +55,6 @@ export const ChangePlanSchema = z.object({
 export type CreateThoughtChange = z.infer<typeof CreateThoughtChangeSchema>;
 export type CreateLinkChange = z.infer<typeof CreateLinkChangeSchema>;
 export type AppendNoteChange = z.infer<typeof AppendNoteChangeSchema>;
+export type ReplaceNoteChange = z.infer<typeof ReplaceNoteChangeSchema>;
 export type Change = z.infer<typeof ChangeSchema>;
 export type ChangePlan = z.infer<typeof ChangePlanSchema>;

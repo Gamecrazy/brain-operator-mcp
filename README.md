@@ -34,7 +34,7 @@ Expected:
 {
   "ok": true,
   "name": "brain-operator-mcp",
-  "version": "0.1.0"
+  "version": "0.1.1"
 }
 ```
 
@@ -125,6 +125,8 @@ Plan workflow:
 - `discard_change_plan`
 - `commit_change_plan`
 
+Batch plans support `create_thought`, `create_link`, `append_note`, and `replace_note` changes.
+
 ## Local App Control
 
 The MCP server can control the local TheBrain desktop client through TheBrain Local API.
@@ -207,6 +209,12 @@ The example below uses redacted placeholders. Do not paste private source notes 
       "op": "append_note",
       "targetRef": "t_root",
       "markdown": "[REDACTED_MARKDOWN_CONTENT]"
+    },
+    {
+      "id": "c5",
+      "op": "replace_note",
+      "targetRef": "t_core_loop",
+      "markdown": "[REDACTED_REPLACEMENT_MARKDOWN]"
     }
   ]
 }
