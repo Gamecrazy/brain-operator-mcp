@@ -22,7 +22,8 @@ MCP responses use:
 
 - `structuredContent` for concise model-visible data.
 - `content[0].text` for a one-sentence human summary.
-- `_meta.raw` for full raw TheBrain responses when useful and secret-safe.
+- `_meta.raw` for raw TheBrain responses when useful and secret-safe.
+- Batch plan and commit outputs must redact note markdown, labels, created thought names, and duplicate candidate details from model-visible output and audit result summaries.
 
 ## Read Tools
 
@@ -46,9 +47,9 @@ MCP responses use:
 ## Plan Tools
 
 - `create_change_plan`: validates and stores a pending batch plan. Does not write to TheBrain.
-- `get_change_plan`: reads a stored plan.
+- `get_change_plan`: reads a stored plan with content fields redacted for output.
 - `discard_change_plan`: marks a stored plan as discarded.
-- `commit_change_plan`: executes a stored plan. Accepts only `planId` and `confirm: true`.
+- `commit_change_plan`: executes a stored plan. Accepts only `planId` and `confirm: true`. Returns IDs and counts, not full imported content.
 
 ## Error Codes
 

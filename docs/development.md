@@ -33,6 +33,8 @@ Batch writes must remain two-step:
 
 Do not add a commit API that accepts fresh changes.
 
+Plan content may contain private source notes. Keep full content only in the local `PlanStore` for execution. Model-visible outputs, `_meta.raw`, and audit summaries must use `sanitizeChangePlanForOutput()` or `sanitizeCommitResultForOutput()` from `src/safety/sanitizePlan.ts`.
+
 ## Testing
 
 Run:

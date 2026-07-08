@@ -123,22 +123,24 @@ Call append_note on created thought:
 
 Batch plan/commit:
 
+The example below uses redacted placeholders. Do not paste private source notes into public docs, issues, or screenshots.
+
 ```json
 {
-  "title": "[MCP_TEST] Game Design Import",
+  "title": "[MCP_TEST] Redacted Import",
   "changes": [
     {
       "id": "c1",
       "op": "create_thought",
       "clientRef": "t_root",
-      "name": "[MCP_TEST] 卡牌战斗前三分钟体验",
-      "label": "MCP import root"
+      "name": "[MCP_TEST] REDACTED_ROOT_TOPIC",
+      "label": "[REDACTED_LABEL]"
     },
     {
       "id": "c2",
       "op": "create_thought",
       "clientRef": "t_core_loop",
-      "name": "[MCP_TEST] 核心循环"
+      "name": "[MCP_TEST] REDACTED_CHILD_TOPIC"
     },
     {
       "id": "c3",
@@ -151,7 +153,7 @@ Batch plan/commit:
       "id": "c4",
       "op": "append_note",
       "targetRef": "t_root",
-      "markdown": "核心玩法：卡牌构筑 + 使灵协战。前三分钟要出现配队、破韧、迸发和强力 combo。"
+      "markdown": "[REDACTED_MARKDOWN_CONTENT]"
     }
   ]
 }

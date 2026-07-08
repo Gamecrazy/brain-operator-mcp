@@ -1,5 +1,6 @@
 import { auditLog } from "../safety/auditLog.js";
 import { requireWriteEnabled } from "../safety/policy.js";
+import { sanitizeCommitResultForOutput } from "../safety/sanitizePlan.js";
 import { relationToApiValue } from "../thebrain/relation.js";
 import type { Change, ChangePlan } from "./changePlan.js";
 import type { PlanStore } from "./planStore.js";
@@ -63,7 +64,7 @@ export async function commitChangePlan(input: {
 
   result.partialFailure = result.failures.length > 0;
   await input.planStore.update({ ...plan, status: "committed" });
-  await auditLog("commit_change_plan", { planId: plan.planId, brainId: plan.brainId }, result);
+  await auditLog("commit_change_plan", { planId: plan.planId, brainId: plan.brainId }, sanitizeCommitResultForOutput(result));
 
   return result;
 }

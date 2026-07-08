@@ -9,6 +9,7 @@ import { ChangePlanSchema, type Change } from "../plans/changePlan.js";
 import { commitChangePlan } from "../plans/commitExecutor.js";
 import { auditLog } from "../safety/auditLog.js";
 import { policy, requireWriteEnabled } from "../safety/policy.js";
+import { sanitizeChangePlanForOutput, sanitizeCommitResultForOutput } from "../safety/sanitizePlan.js";
 import { resolveBrainId } from "../safety/validators.js";
 import { addMinutes } from "../util/time.js";
 import type { ToolContext } from "./registerAllTools.js";
@@ -40,6 +41,7 @@ export function registerPlanTools(server: McpServer, ctx: ToolContext) {
           duplicateCandidates
         });
         await ctx.planStore.save(plan);
+        const sanitizedPlan = sanitizeChangePlanForOutput(plan);
         return ok(
           {
             planId: plan.planId,
@@ -49,7 +51,7 @@ export function registerPlanTools(server: McpServer, ctx: ToolContext) {
             expiresAt: plan.expiresAt
           },
           "Change plan created.",
-          { raw: plan }
+          { raw: sanitizedPlan }
         );
       } catch (error) {
         return toolFailure("PLAN_VALIDATION_FAILED", error, "Fix invalid changes and try again.");
@@ -67,7 +69,7 @@ export function registerPlanTools(server: McpServer, ctx: ToolContext) {
       try {
         const plan = await ctx.planStore.get(input.planId);
         if (!plan) throw new Error("PLAN_NOT_FOUND");
-        return ok({ plan }, "Change plan loaded.");
+        return ok({ plan: sanitizeChangePlanForOutput(plan) }, "Change plan loaded.");
       } catch (error) {
         return toolFailure("PLAN_NOT_FOUND", error, "Check planId.");
       }
@@ -104,8 +106,12 @@ export function registerPlanTools(server: McpServer, ctx: ToolContext) {
       try {
         requireWriteEnabled();
         const result = await commitChangePlan({ brain: ctx.brain, planStore: ctx.planStore, planId: input.planId });
-        await auditLog("commit_change_plan_tool", { planId: input.planId }, result);
-        return ok(result, result.partialFailure ? "Change plan committed with failures." : "Change plan committed.");
+        const sanitizedResult = sanitizeCommitResultForOutput(result);
+        await auditLog("commit_change_plan_tool", { planId: input.planId }, sanitizedResult);
+        return ok(
+          sanitizedResult,
+          result.partialFailure ? "Change plan committed with failures." : "Change plan committed."
+        );
       } catch (error) {
         return toolFailure("UNKNOWN_ERROR", error, "Check plan status and confirmation.");
       }
