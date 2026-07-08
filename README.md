@@ -17,6 +17,8 @@ The server defaults to:
 - `POST /mcp`
 - `GET /brain/health`
 - `POST /brain/mcp`
+- `GET /brain/v012/health`
+- `POST /brain/v012/mcp`
 - TheBrain Cloud API base URL: `https://api.bra.in`
 - TheBrain Local API base URL: `http://localhost:8001/api`
 
@@ -34,7 +36,7 @@ Expected:
 {
   "ok": true,
   "name": "brain-operator-mcp",
-  "version": "0.1.1"
+  "version": "0.1.2"
 }
 ```
 

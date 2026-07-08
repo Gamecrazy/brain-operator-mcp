@@ -75,6 +75,26 @@ describe("HTTP routes", () => {
     });
   });
 
+  it("serves versioned MCP under /brain/v012/mcp", async () => {
+    const baseUrl = await startTestServer();
+    const healthResponse = await fetch(`${baseUrl}/brain/v012/health`);
+    const healthBody = await healthResponse.json();
+    const client = new Client({ name: "versioned-route-test", version: "0.0.0" });
+    const transport = new StreamableHTTPClientTransport(new URL(`${baseUrl}/brain/v012/mcp`));
+
+    await client.connect(transport);
+    const result = await client.callTool({ name: "health_check", arguments: {} });
+    await client.close();
+
+    expect(healthBody).toMatchObject({ ok: true, name: "brain-operator-mcp" });
+    expect(result.structuredContent).toMatchObject({
+      ok: true,
+      data: {
+        server: "brain-operator-mcp"
+      }
+    });
+  });
+
   it("routes GET /brain/mcp to the streamable HTTP transport", async () => {
     const baseUrl = await startTestServer();
 

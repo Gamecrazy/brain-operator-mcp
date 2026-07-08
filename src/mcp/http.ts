@@ -40,10 +40,13 @@ export function createHttpApp() {
 
   app.get("/health", healthHandler);
   app.get("/brain/health", healthHandler);
+  app.get("/brain/v012/health", healthHandler);
   app.get("/mcp", mcpHandler);
   app.get("/brain/mcp", mcpHandler);
+  app.get("/brain/v012/mcp", mcpHandler);
   app.post("/mcp", mcpHandler);
   app.post("/brain/mcp", mcpHandler);
+  app.post("/brain/v012/mcp", mcpHandler);
 
   return app;
 }
