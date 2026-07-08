@@ -2,6 +2,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { config } from "../config.js";
 import { FilePlanStore } from "../plans/planStore.js";
 import { TheBrainClient } from "../thebrain/client.js";
+import { LocalAppClient } from "../thebrain/localAppClient.js";
 import { registerAllTools } from "../tools/registerAllTools.js";
 
 export function createMcpServer() {
@@ -15,6 +16,7 @@ export function createMcpServer() {
 
   registerAllTools(server, {
     brain: new TheBrainClient(),
+    localApp: new LocalAppClient(),
     planStore: new FilePlanStore(config.PLAN_STORE_PATH)
   });
 

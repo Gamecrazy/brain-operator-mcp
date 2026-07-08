@@ -77,6 +77,15 @@ export const AddUrlAttachmentInputSchema = z.object({
   name: z.string().max(200).optional()
 });
 
+export const AppBrainInputSchema = z.object({
+  brainId: z.string().optional()
+});
+
+export const ActivateThoughtInputSchema = z.object({
+  brainId: z.string().optional(),
+  thoughtId: z.string().min(1)
+});
+
 export const CreateChangePlanInputSchema = z.object({
   brainId: z.string().optional(),
   title: z.string().min(1).max(200),
