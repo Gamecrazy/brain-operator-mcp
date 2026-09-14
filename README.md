@@ -1,6 +1,6 @@
 # Brain Operator MCP
 
-[![M8ven Trust Score](https://m8ven.ai/api/mcp/badge?repo=Gamecrazy/brain-operator-mcp)](https://m8ven.ai/mcp/gamecrazy-brain-operator-mcp-1vdyls)
+[![M8ven Live Monitoring](https://m8ven.ai/badge/mcp/gamecrazy-brain-operator-mcp-1vdyls)](https://m8ven.ai/mcp/gamecrazy-brain-operator-mcp-1vdyls)
 
 A TypeScript MCP server that lets ChatGPT and other MCP clients read and safely modify TheBrain through the TheBrain REST API.
 
@@ -163,7 +163,7 @@ Local-only tools:
 
 ## Trust & Verification
 
-This server is independently scanned by the [M8ven Trust Index](https://m8ven.ai/mcp/gamecrazy-brain-operator-mcp-1vdyls). The badge at the top of this README is a live image that reflects the latest published score. The scan checks source code, dependency CVEs, tool annotations, input validation, error handling, and hardcoded secrets against the public GitHub repository.
+This server is independently scanned by the [M8ven Trust Index](https://m8ven.ai/mcp/gamecrazy-brain-operator-mcp-1vdyls). The repository is connected to M8ven live monitoring, so every push is automatically re-verified and the badge at the top of this README updates itself. The scan checks source code, dependency CVEs, tool annotations, input validation, error handling, and hardcoded secrets against the public GitHub repository.
 
 ## Manual Smoke Tests
 
