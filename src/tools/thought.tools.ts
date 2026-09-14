@@ -11,7 +11,14 @@ import { requireWriteEnabled } from "../safety/policy.js";
 import { resolveBrainId } from "../safety/validators.js";
 import { relationToApiValue } from "../thebrain/relation.js";
 import type { ToolContext } from "./registerAllTools.js";
-import { extractId, summaryArray, toolFailure } from "./toolUtils.js";
+import {
+  CREATE_TOOL,
+  IDEMPOTENT_WRITE_TOOL,
+  READ_ONLY_TOOL,
+  extractId,
+  summaryArray,
+  toolFailure
+} from "./toolUtils.js";
 
 export function registerThoughtTools(server: McpServer, ctx: ToolContext) {
   server.registerTool(
@@ -19,7 +26,8 @@ export function registerThoughtTools(server: McpServer, ctx: ToolContext) {
     {
       description:
         "Search thoughts, notes, and related content in a TheBrain brain. Read-only. Use this before write operations when the target thought ID is uncertain.",
-      inputSchema: SearchThoughtsInputSchema
+      inputSchema: SearchThoughtsInputSchema,
+      annotations: READ_ONLY_TOOL
     },
     async (input) => {
       try {
@@ -41,7 +49,8 @@ export function registerThoughtTools(server: McpServer, ctx: ToolContext) {
     "get_thought",
     {
       description: "Get details for a TheBrain thought. Read-only.",
-      inputSchema: ThoughtIdInputSchema
+      inputSchema: ThoughtIdInputSchema,
+      annotations: READ_ONLY_TOOL
     },
     async (input) => {
       try {
@@ -58,7 +67,8 @@ export function registerThoughtTools(server: McpServer, ctx: ToolContext) {
     "get_thought_graph",
     {
       description: "Get a thought graph with related thoughts, links, and attachments. Read-only.",
-      inputSchema: ThoughtIdInputSchema
+      inputSchema: ThoughtIdInputSchema,
+      annotations: READ_ONLY_TOOL
     },
     async (input) => {
       try {
@@ -75,7 +85,8 @@ export function registerThoughtTools(server: McpServer, ctx: ToolContext) {
     "create_thought",
     {
       description: "Create a TheBrain thought. Write operation.",
-      inputSchema: CreateThoughtInputSchema
+      inputSchema: CreateThoughtInputSchema,
+      annotations: CREATE_TOOL
     },
     async (input) => {
       try {
@@ -104,7 +115,8 @@ export function registerThoughtTools(server: McpServer, ctx: ToolContext) {
     "update_thought",
     {
       description: "Update a TheBrain thought name, label, or type. Write operation.",
-      inputSchema: UpdateThoughtInputSchema
+      inputSchema: UpdateThoughtInputSchema,
+      annotations: IDEMPOTENT_WRITE_TOOL
     },
     async (input) => {
       try {

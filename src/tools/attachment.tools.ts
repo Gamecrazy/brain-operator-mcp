@@ -5,14 +5,15 @@ import { auditLog } from "../safety/auditLog.js";
 import { requireWriteEnabled } from "../safety/policy.js";
 import { isSafePublicUrl, resolveBrainId } from "../safety/validators.js";
 import type { ToolContext } from "./registerAllTools.js";
-import { extractId, summaryArray, toolFailure } from "./toolUtils.js";
+import { CREATE_TOOL, READ_ONLY_TOOL, extractId, summaryArray, toolFailure } from "./toolUtils.js";
 
 export function registerAttachmentTools(server: McpServer, ctx: ToolContext) {
   server.registerTool(
     "list_attachments",
     {
       description: "List attachments for a TheBrain thought. Read-only.",
-      inputSchema: ThoughtIdInputSchema
+      inputSchema: ThoughtIdInputSchema,
+      annotations: READ_ONLY_TOOL
     },
     async (input) => {
       try {
@@ -29,7 +30,8 @@ export function registerAttachmentTools(server: McpServer, ctx: ToolContext) {
     "add_url_attachment",
     {
       description: "Add a public HTTP or HTTPS URL attachment to a TheBrain thought. Write operation.",
-      inputSchema: AddUrlAttachmentInputSchema
+      inputSchema: AddUrlAttachmentInputSchema,
+      annotations: CREATE_TOOL
     },
     async (input) => {
       try {

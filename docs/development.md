@@ -17,8 +17,13 @@ This project is maintained as a small, layered MCP server.
 2. Add focused unit tests when behavior changes.
 3. Register the tool in the relevant `src/tools/*.tools.ts` file.
 4. For write tools, call `requireWriteEnabled()` before the API call.
+   Every tool must set `annotations` to one of `READ_ONLY_TOOL`, `CREATE_TOOL`, or `IDEMPOTENT_WRITE_TOOL` from `src/tools/toolUtils.ts` (all four MCP hints as explicit booleans; `tests/toolAnnotations.test.ts` enforces this). Do not introduce `destructiveHint: true` without the separate review required by `AGENTS.md`.
 5. Add audit logging for successful writes.
 6. Update `docs/tool-contract.md` and this guide when behavior changes.
+
+## Tool Failure Mapping
+
+Internal guard errors (for example `BrainIdRequiredError`, plan state errors, local app errors) use their error code as the `Error.message`. Tool handlers must wrap errors with `toolFailure()` from `src/tools/toolUtils.ts`, which maps known codes to a human-readable `message` and a code-specific `suggestedAction` via `KNOWN_ERRORS`, overriding the tool's default code and action. When adding a new internal error code, add it to `KNOWN_ERRORS` and list it in `docs/tool-contract.md`.
 
 ## Note Write Tools
 
@@ -51,6 +56,7 @@ Batch writes must remain two-step:
 2. `commit_change_plan` accepts only `planId` and `confirm: true`.
 
 Do not add a commit API that accepts fresh changes.
+`discard_change_plan` and `commit_change_plan` only act on `pending` plans; a committed plan's status is part of the audit trail and must not be overwritten.
 
 Plan content may contain private source notes. Keep full content only in the local `PlanStore` for execution. Model-visible outputs, `_meta.raw`, and audit summaries must use `sanitizeChangePlanForOutput()` or `sanitizeCommitResultForOutput()` from `src/safety/sanitizePlan.ts`.
 Batch note changes may be `append_note` or `replace_note`; both must redact Markdown in model-visible plan output.

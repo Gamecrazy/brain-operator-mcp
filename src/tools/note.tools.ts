@@ -5,14 +5,15 @@ import { auditLog } from "../safety/auditLog.js";
 import { requireWriteEnabled } from "../safety/policy.js";
 import { resolveBrainId } from "../safety/validators.js";
 import type { ToolContext } from "./registerAllTools.js";
-import { toolFailure } from "./toolUtils.js";
+import { CREATE_TOOL, IDEMPOTENT_WRITE_TOOL, READ_ONLY_TOOL, toolFailure } from "./toolUtils.js";
 
 export function registerNoteTools(server: McpServer, ctx: ToolContext) {
   server.registerTool(
     "get_note",
     {
       description: "Get a thought note as markdown, HTML, or text. Read-only.",
-      inputSchema: GetNoteInputSchema
+      inputSchema: GetNoteInputSchema,
+      annotations: READ_ONLY_TOOL
     },
     async (input) => {
       try {
@@ -29,7 +30,8 @@ export function registerNoteTools(server: McpServer, ctx: ToolContext) {
     "append_note",
     {
       description: "Append markdown content to an existing TheBrain thought note. Write operation. Does not overwrite existing note content.",
-      inputSchema: AppendNoteInputSchema
+      inputSchema: AppendNoteInputSchema,
+      annotations: CREATE_TOOL
     },
     async (input) => {
       try {
@@ -56,12 +58,7 @@ export function registerNoteTools(server: McpServer, ctx: ToolContext) {
       description:
         "Set the Markdown note content for an existing TheBrain thought. Write operation. Use when the user has provided the full desired note body.",
       inputSchema: ReplaceNoteInputSchema,
-      annotations: {
-        readOnlyHint: false,
-        destructiveHint: false,
-        idempotentHint: true,
-        openWorldHint: false
-      }
+      annotations: IDEMPOTENT_WRITE_TOOL
     },
     async (input) => {
       try {

@@ -6,14 +6,15 @@ import { requireWriteEnabled } from "../safety/policy.js";
 import { resolveBrainId } from "../safety/validators.js";
 import { relationToApiValue } from "../thebrain/relation.js";
 import type { ToolContext } from "./registerAllTools.js";
-import { extractId, toolFailure } from "./toolUtils.js";
+import { CREATE_TOOL, extractId, toolFailure } from "./toolUtils.js";
 
 export function registerLinkTools(server: McpServer, ctx: ToolContext) {
   server.registerTool(
     "create_link",
     {
       description: "Create a link between two TheBrain thoughts. Write operation.",
-      inputSchema: CreateLinkInputSchema
+      inputSchema: CreateLinkInputSchema,
+      annotations: CREATE_TOOL
     },
     async (input) => {
       try {

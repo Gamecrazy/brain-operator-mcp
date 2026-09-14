@@ -105,4 +105,56 @@ describe("plan tools", () => {
       markdownChars: 30
     });
   });
+
+  it("returns a descriptive BRAIN_ID_REQUIRED failure when no brainId is available", async () => {
+    process.env.THEBRAIN_DEFAULT_BRAIN_ID = "";
+    const { server, handlers } = toolHandlers();
+    registerPlanTools(server, {
+      brain: {} as any,
+      localApp: {} as any,
+      planStore: new MemoryPlanStore()
+    });
+
+    const result = await handlers.get("create_note_update_plan")?.({
+      thoughtId: "thought_1",
+      title: "Set note",
+      markdown: "hello"
+    });
+
+    expect(result.structuredContent).toMatchObject({
+      ok: false,
+      code: "BRAIN_ID_REQUIRED",
+      suggestedAction: expect.stringContaining("brainId")
+    });
+    expect(result.structuredContent.message).not.toBe("BRAIN_ID_REQUIRED");
+  });
+
+  it("refuses to discard a plan that is no longer pending", async () => {
+    const planStore = new MemoryPlanStore();
+    const { server, handlers } = toolHandlers();
+    registerPlanTools(server, {
+      brain: {} as any,
+      localApp: {} as any,
+      planStore
+    });
+
+    await handlers.get("create_note_update_plan")?.({
+      brainId: "brain_1",
+      thoughtId: "thought_1",
+      title: "Set note",
+      markdown: "hello"
+    });
+    const planId = planStore.plans[0].planId;
+    await planStore.update({ ...planStore.plans[0], status: "committed" });
+
+    const result = await handlers.get("discard_change_plan")?.({ planId });
+
+    expect(result.structuredContent).toMatchObject({ ok: false, code: "PLAN_NOT_PENDING" });
+    expect(planStore.plans[0].status).toBe("committed");
+
+    await planStore.update({ ...planStore.plans[0], status: "pending" });
+    const discarded = await handlers.get("discard_change_plan")?.({ planId });
+    expect(discarded.structuredContent).toMatchObject({ ok: true, data: { planId, status: "discarded" } });
+    expect(planStore.plans[0].status).toBe("discarded");
+  });
 });

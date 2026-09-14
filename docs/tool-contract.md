@@ -61,7 +61,7 @@ Local app-control tools authenticate with `THEBRAIN_LOCAL_API_TOKEN`, not `THEBR
 - `create_change_plan`: validates and stores a pending batch plan. Does not write to TheBrain.
 - `create_note_update_plan`: stores a one-change pending plan to set a thought note's Markdown content. It redacts Markdown from model-visible output and does not write to TheBrain until `commit_change_plan`.
 - `get_change_plan`: reads a stored plan with content fields redacted for output.
-- `discard_change_plan`: marks a stored plan as discarded.
+- `discard_change_plan`: marks a stored pending plan as discarded. Plans that are already committed, discarded, or expired are left untouched and return `PLAN_NOT_PENDING`.
 - `commit_change_plan`: executes a stored plan. Accepts only `planId` and `confirm: true`. Returns IDs and counts, not full imported content.
 
 Batch change ops include `create_thought`, `create_link`, `append_note`, and `replace_note`. `replace_note` overwrites the target note Markdown during commit.
@@ -69,3 +69,5 @@ Batch change ops include `create_thought`, `create_link`, `append_note`, and `re
 ## Error Codes
 
 Common codes include `BRAIN_ID_REQUIRED`, `WRITE_DISABLED`, `UNSAFE_URL`, `RELATION_REQUIRED`, `NO_PATCH_FIELDS`, `PLAN_NOT_FOUND`, `PLAN_EXPIRED`, `PLAN_NOT_PENDING`, `PLAN_VALIDATION_FAILED`, `LOCAL_APP_TOKEN_REQUIRED`, `LOCAL_APP_UNAVAILABLE`, `LOCAL_APP_AUTH_FAILED`, `LOCAL_APP_ACTION_FAILED`, and `UNKNOWN_ERROR`.
+
+For these known codes, `message` is a human-readable explanation and `suggestedAction` is specific to the code (for example `BRAIN_ID_REQUIRED` suggests passing `brainId` or setting `THEBRAIN_DEFAULT_BRAIN_ID`), regardless of which tool raised it. Other failures use the tool's default code and action with a sanitized upstream message.

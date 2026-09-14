@@ -4,13 +4,15 @@ import { ok } from "../mcp/result.js";
 import { HealthCheckInputSchema } from "../mcp/schemas.js";
 import { policy } from "../safety/policy.js";
 import type { ToolContext } from "./registerAllTools.js";
+import { READ_ONLY_TOOL } from "./toolUtils.js";
 
 export function registerHealthTools(server: McpServer, _ctx: ToolContext) {
   server.registerTool(
     "health_check",
     {
       description: "Check this MCP server configuration without calling TheBrain.",
-      inputSchema: HealthCheckInputSchema
+      inputSchema: HealthCheckInputSchema,
+      annotations: READ_ONLY_TOOL
     },
     async () =>
       ok(

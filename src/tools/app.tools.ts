@@ -5,7 +5,7 @@ import { auditLog } from "../safety/auditLog.js";
 import { requireWriteEnabled } from "../safety/policy.js";
 import { resolveBrainId } from "../safety/validators.js";
 import type { ToolContext } from "./registerAllTools.js";
-import { toolFailure } from "./toolUtils.js";
+import { IDEMPOTENT_WRITE_TOOL, READ_ONLY_TOOL, toolFailure } from "./toolUtils.js";
 
 export function registerAppTools(server: McpServer, ctx: ToolContext) {
   server.registerTool(
@@ -13,7 +13,8 @@ export function registerAppTools(server: McpServer, ctx: ToolContext) {
     {
       description:
         "Get the local TheBrain desktop client's active brain, active thought, login state, and open tabs. Local API only.",
-      inputSchema: HealthCheckInputSchema
+      inputSchema: HealthCheckInputSchema,
+      annotations: READ_ONLY_TOOL
     },
     async () => {
       try {
@@ -33,7 +34,8 @@ export function registerAppTools(server: McpServer, ctx: ToolContext) {
     "open_brain",
     {
       description: "Open a brain tab in the local TheBrain desktop client. Local API only.",
-      inputSchema: AppBrainInputSchema
+      inputSchema: AppBrainInputSchema,
+      annotations: IDEMPOTENT_WRITE_TOOL
     },
     async (input) => {
       try {
@@ -52,7 +54,8 @@ export function registerAppTools(server: McpServer, ctx: ToolContext) {
     "activate_thought",
     {
       description: "Activate a thought in the local TheBrain desktop client. Local API only.",
-      inputSchema: ActivateThoughtInputSchema
+      inputSchema: ActivateThoughtInputSchema,
+      annotations: IDEMPOTENT_WRITE_TOOL
     },
     async (input) => {
       try {
@@ -75,7 +78,8 @@ export function registerAppTools(server: McpServer, ctx: ToolContext) {
     "close_brain_tab",
     {
       description: "Close a brain tab in the local TheBrain desktop client. Local API only.",
-      inputSchema: AppBrainInputSchema
+      inputSchema: AppBrainInputSchema,
+      annotations: IDEMPOTENT_WRITE_TOOL
     },
     async (input) => {
       try {

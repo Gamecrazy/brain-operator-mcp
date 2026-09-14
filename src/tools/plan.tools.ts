@@ -14,14 +14,15 @@ import { sanitizeChangePlanForOutput, sanitizeCommitResultForOutput } from "../s
 import { resolveBrainId } from "../safety/validators.js";
 import { addMinutes } from "../util/time.js";
 import type { ToolContext } from "./registerAllTools.js";
-import { toolFailure } from "./toolUtils.js";
+import { CREATE_TOOL, IDEMPOTENT_WRITE_TOOL, READ_ONLY_TOOL, toolFailure } from "./toolUtils.js";
 
 export function registerPlanTools(server: McpServer, ctx: ToolContext) {
   server.registerTool(
     "create_change_plan",
     {
       description: "Create a pending batch write plan for TheBrain. Does not write to TheBrain.",
-      inputSchema: CreateChangePlanInputSchema
+      inputSchema: CreateChangePlanInputSchema,
+      annotations: CREATE_TOOL
     },
     async (input) => {
       try {
@@ -66,7 +67,8 @@ export function registerPlanTools(server: McpServer, ctx: ToolContext) {
     {
       description:
         "Create a pending plan to set a thought note's Markdown content after user confirmation. Does not write to TheBrain until commit_change_plan is called.",
-      inputSchema: CreateNoteUpdatePlanInputSchema
+      inputSchema: CreateNoteUpdatePlanInputSchema,
+      annotations: CREATE_TOOL
     },
     async (input) => {
       try {
@@ -113,7 +115,8 @@ export function registerPlanTools(server: McpServer, ctx: ToolContext) {
     "get_change_plan",
     {
       description: "Get a saved TheBrain change plan. Read-only.",
-      inputSchema: PlanIdInputSchema
+      inputSchema: PlanIdInputSchema,
+      annotations: READ_ONLY_TOOL
     },
     async (input) => {
       try {
@@ -130,12 +133,14 @@ export function registerPlanTools(server: McpServer, ctx: ToolContext) {
     "discard_change_plan",
     {
       description: "Discard a pending TheBrain change plan. Does not write to TheBrain.",
-      inputSchema: PlanIdInputSchema
+      inputSchema: PlanIdInputSchema,
+      annotations: IDEMPOTENT_WRITE_TOOL
     },
     async (input) => {
       try {
         const plan = await ctx.planStore.get(input.planId);
         if (!plan) throw new Error("PLAN_NOT_FOUND");
+        if (plan.status !== "pending") throw new Error("PLAN_NOT_PENDING");
         const discarded = { ...plan, status: "discarded" as const };
         await ctx.planStore.update(discarded);
         return ok({ planId: input.planId, status: "discarded" }, "Change plan discarded.");
@@ -150,7 +155,8 @@ export function registerPlanTools(server: McpServer, ctx: ToolContext) {
     {
       description:
         "Commit a previously created TheBrain change plan. Write operation. Only call after the user explicitly confirms a previously created change plan.",
-      inputSchema: CommitChangePlanInputSchema
+      inputSchema: CommitChangePlanInputSchema,
+      annotations: CREATE_TOOL
     },
     async (input) => {
       try {

@@ -3,14 +3,15 @@ import { ok } from "../mcp/result.js";
 import { GetBrainInputSchema, HealthCheckInputSchema } from "../mcp/schemas.js";
 import { resolveBrainId } from "../safety/validators.js";
 import type { ToolContext } from "./registerAllTools.js";
-import { summaryArray, toolFailure } from "./toolUtils.js";
+import { READ_ONLY_TOOL, summaryArray, toolFailure } from "./toolUtils.js";
 
 export function registerBrainTools(server: McpServer, ctx: ToolContext) {
   server.registerTool(
     "list_brains",
     {
       description: "List TheBrain brains available to the configured API key. Read-only.",
-      inputSchema: HealthCheckInputSchema
+      inputSchema: HealthCheckInputSchema,
+      annotations: READ_ONLY_TOOL
     },
     async () => {
       try {
@@ -26,7 +27,8 @@ export function registerBrainTools(server: McpServer, ctx: ToolContext) {
     "get_brain",
     {
       description: "Get details for one TheBrain brain. Read-only.",
-      inputSchema: GetBrainInputSchema
+      inputSchema: GetBrainInputSchema,
+      annotations: READ_ONLY_TOOL
     },
     async (input) => {
       try {

@@ -1,5 +1,7 @@
 # Brain Operator MCP
 
+[![M8ven Trust Score](https://m8ven.ai/api/mcp/badge?repo=Gamecrazy/brain-operator-mcp)](https://m8ven.ai/mcp/gamecrazy-brain-operator-mcp-1vdyls)
+
 A TypeScript MCP server that lets ChatGPT and other MCP clients read and safely modify TheBrain through the TheBrain REST API.
 
 ## Setup
@@ -157,6 +159,11 @@ Local-only tools:
 - Notes are append-only and limited by `MAX_NOTE_CHARS`.
 - `replace_note` is the explicit full-note content setting tool. It sends the provided Markdown body to TheBrain's note update endpoint and is kept separate from `append_note`.
 - URL attachments reject local and private-network hosts.
+- Every tool declares explicit `readOnlyHint`, `destructiveHint`, `idempotentHint`, and `openWorldHint` annotations so MCP clients can reason about side effects before calling. No tool is marked destructive.
+
+## Trust & Verification
+
+This server is independently scanned by the [M8ven Trust Index](https://m8ven.ai/mcp/gamecrazy-brain-operator-mcp-1vdyls). The badge at the top of this README is a live image that reflects the latest published score. The scan checks source code, dependency CVEs, tool annotations, input validation, error handling, and hardcoded secrets against the public GitHub repository.
 
 ## Manual Smoke Tests
 
